@@ -1,23 +1,38 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
+
+// Can use react hooks outside React components
+function useLogger(value){
+  useEffect(() => {
+    console.log('Value changed: ', value)
+  }, [value])
+}
+
+function useInput(initialValue){
+  const [value, setValue] = useState(initialValue)
+
+  const onChange = event => {
+    setValue(event.target.value)
+  }
+
+  const clear = () => setValue('')
+
+  return {
+    bind: {value, onChange},
+    value,
+    clear
+  }
+}
 
 function App() {
-  const [name, setName] = useState('')
-  const [lastName, setLastName] = useState('')
-
-  const changeHandler = event => {
-    setName(event.target.value)
-  }
-  const lastNameHandler = event => {
-    setLastName(event.target.value)
-  }
-
+  const input = useInput('')
+  useLogger(input.value)
 
   return (
     <div className={'container pt-3'}>
-      <input type='text' value={name} onChange={changeHandler}/>
-      <input type='text' value={lastName} onChange={lastNameHandler}/>
+      <input type='text' {...input.bind} />
+      <button className={'btn btn-warning'} onClick={input.clear}> Clear</button>
       <hr />
-      <h1>{name} {lastName}</h1>
+      <h1>{input.value}</h1>
     </div>
   );
 }
